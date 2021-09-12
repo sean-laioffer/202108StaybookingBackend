@@ -1,6 +1,6 @@
 package com.laioffer.staybooking.service;
 
-import com.laioffer.staybooking.controller.UserNotExistException;
+import com.laioffer.staybooking.exception.UserNotExistException;
 import com.laioffer.staybooking.model.Authority;
 import com.laioffer.staybooking.model.Token;
 import com.laioffer.staybooking.model.User;

@@ -4,18 +4,23 @@ import com.laioffer.staybooking.model.*;
 import com.laioffer.staybooking.repository.StayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StayService {
     private StayRepository stayRepository;
+    private ImageStorageService imageStorageService;
 
     @Autowired
-    public StayService(StayRepository stayRepository) {
+    public StayService(StayRepository stayRepository, ImageStorageService imageStorageService) {
         this.stayRepository = stayRepository;
+        this.imageStorageService = imageStorageService;
     }
 
     public List<Stay> listByUser(String username) {
@@ -26,7 +31,7 @@ public class StayService {
         return stayRepository.findById(stayId).orElse(null);
     }
 
-    public void add(Stay stay) {
+    public void add(Stay stay, MultipartFile[] images) {
         LocalDate date = LocalDate.now().plusDays(1);
         List<StayAvailability> availabilities = new ArrayList<>();
         for (int i = 0; i < 30; ++i) {
@@ -34,6 +39,14 @@ public class StayService {
             date = date.plusDays(1);
         }
         stay.setAvailabilities(availabilities);
+
+        List<String> mediaLinks = Arrays.stream(images).parallel().map(image -> imageStorageService.save(image)).collect(Collectors.toList());
+        List<StayImage> stayImages = new ArrayList<>();
+        for (String mediaLink : mediaLinks) {
+            stayImages.add(new StayImage(mediaLink, stay));
+        }
+        stay.setImages(stayImages);
+
         stayRepository.save(stay);
     }
 
