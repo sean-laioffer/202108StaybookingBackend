@@ -1,4 +1,4 @@
-package com.laioffer.staybooking.controller;
+package com.laioffer.staybooking.exception;
 
 public class UserNotExistException extends RuntimeException {
     public UserNotExistException(String message) {
